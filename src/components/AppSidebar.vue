@@ -12,68 +12,80 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
-import { ref } from 'vue'
 
-const versions = ref(['1.0.1', '1.1.0-alpha', '2.0.0-beta1'])
+import { useUserFilterStore } from '@/stores/userFilterStore'
+import { UserRole } from '@/types/user.type'
+import Slider from './ui/slider/Slider.vue'
+import SidebarSeparator from './ui/sidebar/SidebarSeparator.vue'
+import { Trash } from 'lucide-vue-next'
 
-const navMain = ref([
-  {
-    title: 'Filter By Salary',
-    items: [
-      { id: 'salary-1', title: '< 50k', isActive: false },
-      { id: 'salary-2', title: '50k - 100k', isActive: false },
-      { id: 'salary-3', title: '> 100k', isActive: false },
-    ],
-  },
+const userFilterStore = useUserFilterStore()
+
+const navMain = [
   {
     title: 'Filter By Role',
     items: [
-      { id: 'role-admin', title: 'Admin Only', isActive: false },
-      { id: 'role-user', title: 'User Only', isActive: false },
-      { id: 'role-guest', title: 'Guest Only', isActive: false },
+      { id: 'role-admin', title: 'Admin', role: UserRole.ADMIN },
+      { id: 'role-user', title: 'User', role: UserRole.USER },
+      { id: 'role-guest', title: 'Guest', role: UserRole.GUEST },
     ],
   },
-  {
-    title: 'Visibility',
-    items: [
-      { id: 'visibility-id', title: 'ID' },
-      { id: 'visibility-email', title: 'Email' },
-      { id: 'visibility-name', title: 'Name' },
-      { id: 'visibility-last-name', title: 'Last Name' },
-      { id: 'visibility-role', title: 'Role' },
-      { id: 'visibility-title', title: 'Title' },
-      { id: 'visibility-salary', title: 'Salary' },
-    ],
-  },
-])
+]
 
-defineProps<{ modelValue: string }>()
-defineEmits<{ (e: 'update:modelValue', value: string): void }>()
+function handleRoleClick(role?: UserRole) {
+  if (!role) return
+  userFilterStore.toggleRole(role)
+}
 </script>
 
 <template>
   <Sidebar>
     <SidebarHeader>
-      <VersionSwitcher :versions="versions" :defaultVersion="versions[0]" />
-      <SearchForm
-        :modelValue="modelValue"
-        @update:modelValue="$emit('update:modelValue', $event)"
-      />
+      <SearchForm />
     </SidebarHeader>
 
-    <SidebarContent>
+    <SidebarContent class="flex flex-col h-full">
       <SidebarGroup v-for="group in navMain" :key="group.title">
         <SidebarGroupLabel>{{ group.title }}</SidebarGroupLabel>
+
         <SidebarGroupContent>
           <SidebarMenu>
-            <SidebarMenuItem v-for="item in group.items" :key="item.title">
-              <SidebarMenuButton>
+            <SidebarMenuItem v-for="item in group.items" :key="item.id">
+              <SidebarMenuButton
+                :isActive="userFilterStore.isRoleActive(item.role)"
+                @click="handleRoleClick(item.role)"
+              >
                 {{ item.title }}
               </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarSeparator class="my-4" />
+
+            <SidebarMenuItem class="py-5 p-2">
+              <p class="text-sm text-gray-500 mb-4">
+                Filter users by salary range <br />
+                {{ userFilterStore.getSalaryRangeLabel }}
+              </p>
+              <Slider
+                :min="0"
+                :max="150000"
+                :step="1000"
+                v-model="userFilterStore.salaryFilter"
+                :label="userFilterStore.getSalaryRangeLabel"
+              />
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>
+
+      <div class="mt-auto mb-5 px-2">
+        <SidebarMenuButton
+          @click="userFilterStore.resetFilters()"
+          class="bg-red-400 hover:bg-red-500 hover:cursor-pointer w-full"
+        >
+          <Trash class="ml-2" /> Reset Filters
+        </SidebarMenuButton>
+      </div>
     </SidebarContent>
 
     <SidebarRail />

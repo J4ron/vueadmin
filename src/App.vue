@@ -11,33 +11,28 @@ import {
 } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import UserTable from './components/ui/UserTable.vue'
-import { ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { fetchUsers } from '@/queries/users.queries'
 import { computed } from 'vue'
+import { useUserFilterStore } from './stores/userFilterStore'
+
+const userFilterStore = useUserFilterStore()
 
 const { data: users, isLoading } = useQuery({
   queryKey: ['users'],
   queryFn: fetchUsers,
 })
 
-const searchQuery = ref('')
 
 const filteredUsers = computed(() => {
-  return (
-    users.value?.filter(
-      (u) =>
-        u.firstname.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        u.lastname.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        u.email.toLowerCase().includes(searchQuery.value.toLowerCase()),
-    ) ?? []
-  )
+  if (!users.value) return []
+  return userFilterStore.filteredUsers(users.value)
 })
 </script>
 
 <template>
   <SidebarProvider>
-    <AppSidebar v-model="searchQuery" />
+    <AppSidebar />
     <SidebarInset>
       <header class="flex h-16 shrink-0 items-center gap-2 border-b px-4">
         <SidebarTrigger class="-ml-1" />
