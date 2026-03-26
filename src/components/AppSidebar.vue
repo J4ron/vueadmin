@@ -13,13 +13,13 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 
-import { useUserFilterStore } from '@/stores/userFilterStore'
+import useFilterStore from '@/stores/useFilterStore'
 import { UserRole } from '@/types/user.type'
 import Slider from './ui/slider/Slider.vue'
 import SidebarSeparator from './ui/sidebar/SidebarSeparator.vue'
 import { Trash } from 'lucide-vue-next'
 
-const userFilterStore = useUserFilterStore()
+const userFilterStore = useFilterStore()
 
 const navMain = [
   {

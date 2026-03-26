@@ -14,15 +14,13 @@ import UserTable from './components/ui/UserTable.vue'
 import { useQuery } from '@tanstack/vue-query'
 import { fetchUsers } from '@/queries/users.queries'
 import { computed } from 'vue'
-import { useUserFilterStore } from './stores/userFilterStore'
-
-const userFilterStore = useUserFilterStore()
+import useFilterStore from './stores/useFilterStore'
+const userFilterStore = useFilterStore()
 
 const { data: users, isLoading } = useQuery({
   queryKey: ['users'],
   queryFn: fetchUsers,
 })
-
 
 const filteredUsers = computed(() => {
   if (!users.value) return []

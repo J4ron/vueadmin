@@ -2,16 +2,16 @@
 import { computed } from 'vue'
 import { Search } from 'lucide-vue-next'
 import { SidebarGroup, SidebarGroupContent, SidebarInput } from '@/components/ui/sidebar'
-import { useUserFilterStore } from '@/stores/userFilterStore'
+import useFilterStore from '@/stores/useFilterStore'
 
-const userStore = useUserFilterStore()
+const userStore = useFilterStore()
 
 const name = computed({
-  get: () => userStore.search,
-  set: (val) => userStore.setSearch(val),
+  get: () => userStore.search.value,
+  set: (val: string) => {
+    userStore.search.value = val
+  },
 })
-
-console.log(userStore.search)
 </script>
 
 <template>
