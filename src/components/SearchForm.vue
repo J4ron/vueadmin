@@ -15,7 +15,7 @@ console.log(userStore.search)
 </script>
 
 <template>
-  <SidebarGroup class="py-0">
+  <SidebarGroup class="py-0 mt-2">
     <SidebarGroupContent class="relative">
       <SidebarInput v-model="name" placeholder="Search users..." class="pl-9" />
       <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
